@@ -1,0 +1,106 @@
+---
+title: "Intro to dplyr -  Lab"
+author: "Richard Sauve"
+output: html_document
+---
+```{r}
+library(tidyverse)
+```
+
+In the package `dplyr` there is a dataset called `starwars`. 
+
+```{r}
+glimpse(starwars)
+```
+
+
+We're going to use this to practice some data wrangling with `dplyr`. 
+
+First,  filter by species to only see the humans, and plot a scatter plot of their height and mass.  
+
+```{r}
+starwars_humans <- filter(starwars, species == "Human")
+plot(starwars_humans$mass, starwars_humans$height, main = "Size of Humans", xlab =  "Mass", ylab = "Height")
+```
+
+Now, change this to see the same plot for the Droids. 
+
+```{r}
+starwars_droids <- filter(starwars, species == "Droid")
+plot(starwars_droids$mass, starwars_droids$height, main = "Size of Droids", xlab =  "Mass", ylab = "Height")
+
+```
+
+
+How many characters are from each planet?
+
+```{r}
+starwars %>%
+  count(homeworld)
+```
+
+If you wanted to arrange this in descending order, what would you add to the pipe? 
+
+```{r}
+starwars %>%
+  count(homeworld) %>%
+  arrange(desc(n))
+```
+
+Find the average height for each eye color.
+
+```{r}
+starwars %>%
+  select(eye_color, height) %>%
+  group_by(eye_color) %>%
+  summarise(avr_height = mean(height)) %>%
+  arrange(desc(avr_height))
+```
+
+What's with the NAs? Filter down to just brown eyes find out. 
+
+
+```{r}
+starwars %>%
+  filter(eye_color == "brown")
+# Just from a lack of information on the characters
+```
+
+Okay, so we have missing data here. Try summarising with `na.omit(height)` instead of just `height`
+
+
+```{r}
+starwars %>%
+  select(eye_color, height) %>%
+  group_by(eye_color) %>%
+  na.omit(height) %>%
+  summarise(avr_height = mean(height)) %>%
+  arrange(desc(avr_height))
+```
+
+So, who is the tallest male? How many blue eyed women are there? How many genders are there? Answer these questions and spend some time asking and answering some of your own. 
+
+
+```{r}
+starwars %>%
+  select(sex, height) %>%
+  top_n(1, wt = height)
+starwars %>%
+  select(sex, eye_color) %>%
+  filter(eye_color == "blue") %>%
+  count()
+starwars %>%
+  select(gender) %>%
+  group_by(gender) %>%
+  na.omit(gender) %>%
+  count()
+
+# ranging characters from oldest to youngest
+starwars %>%
+  select(name, birth_year) %>%
+  na.omit() %>%
+  arrange(desc(birth_year))
+  
+```
+
+

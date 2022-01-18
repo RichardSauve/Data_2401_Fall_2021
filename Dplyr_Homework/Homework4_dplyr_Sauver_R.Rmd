@@ -1,0 +1,173 @@
+---
+title: "Homework 4 - dplyr"
+author: "Richard Sauve"
+date: "DATA 2401"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+Note that these exercises should be performed using `dplyr` (do not directly access or manipulate the data frames). 
+
+Turn in the html to blackboard with the filename `RProject3_yourlastname.html`. **Points will be taken off for not doing this.** 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Part 1 
+
+Install and load the "fueleconomy" package and the tidyverse
+
+```{r}
+# run these only once
+#install.packages("devtools")
+#devtools::install_github("hadley/fueleconomy")
+
+```
+
+```{r}
+library(tidyverse)
+library(fueleconomy)
+library(dplyr)
+```
+
+```{r}
+data <- fueleconomy::vehicles
+glimpse(data)
+```
+
+
+1. Select the different manufacturers (makes) of the cars in this data set. Save this vector in a variable
+```{r}
+manufacturers <- select(data, make)
+```
+
+
+2. Use the `distinct()` function to determine how many different car manufacturers are represented by the data set
+
+```{r}
+manufacturers %>%
+  distinct()
+
+```
+
+
+
+3. Filter the data set for vehicles manufactured in 1997
+
+```{r}
+data %>%
+  filter(year == 1997)
+
+```
+
+
+4. Arrange the 1997 cars by highway (`hwy`) gas milage
+
+```{r}
+data %>%
+  filter(year == 1997) %>%
+  arrange(hwy)
+
+```
+
+
+5. Mutate the 1997 cars data frame to add a column `average` that has the average gas milage (between city and highway mpg) for each car
+
+```{r}
+data %>%
+  filter(year == 1997) %>%
+  mutate(average = (hwy+cty)/2)
+
+
+```
+
+
+
+6. Filter the whole vehicles data set for 2-Wheel Drive vehicles that get more than 20 miles/gallon in the city.  Save this new data frame in a variable.
+
+```{r}
+two_wheel_great_than_20 <- data %>% filter(drive == "2-Wheel Drive") %>% filter(cty >= 20)
+
+```
+
+
+7. Of the above vehicles, what is the vehicle ID of the vehicle with the worst hwy mpg? Hint: filter for the worst vehicle, then select its ID.
+```{r}
+data %>%
+  slice_min(hwy) %>%
+  select(id)
+
+```
+
+
+8. What was the most fuel efficient Honda model of 1995? What was the least?
+
+```{r}
+data %>% filter(make == "Honda") %>% filter(year == 1995) %>% slice_min(hwy)
+data %>% filter(make == "Honda") %>% filter(year == 1995) %>% slice_max(hwy)
+```
+
+
+
+# Part 2 
+
+
+Read in the data (from `pulitzer-circulation-data.csv`). Remember to 
+not treat strings as factors!
+
+```{r}
+data_pul <- read.csv("pulitzer-circulation-data.csv", stringsAsFactors = F)
+```
+
+1. View in the data set. Start to understand what the data set contains
+
+```{r}
+glimpse(data_pul)
+```
+
+
+What do we have here? The names of the papers, their circulations in 2004 and 2013, their number of prizes from 1990 to 2003, from 2004 to 2014, and 1990 to 2014 (which is the previous two added together)
+
+2. Print out the names of the columns for reference
+
+```{r}
+data_pul %>% select(Newspaper)
+
+```
+
+
+3. Add a column to the data frame called 'Pulitzer.Prize.Change` that contains the difference in the number of times each paper was a winner or finalist (hereafter we'll call this group "winner") during 2004-2014 and during 1990-2003
+
+```{r}
+data_pul <- data_pul %>% mutate(Pulitzer.Prize.change = Pulitzer.Prize.Winners.and.Finalists..2004.2014 - Pulitzer.Prize.Winners.and.Finalists..1990.2003)
+
+```
+
+
+4. What was the name of the publication that has the most winners between 2004-2014?
+
+```{r}
+data_pul %>% slice_max(Pulitzer.Prize.Winners.and.Finalists..2004.2014)
+
+```
+
+
+5. Which publication with at least 5 winners between 2004-2014 had the biggest decrease(negative) in daily circulation numbers?
+
+```{r}
+data_pul %>% filter(Pulitzer.Prize.Winners.and.Finalists..2004.2014 > 5) %>% slice_min(Change.in.Daily.Circulation..2004.2013)
+
+```
+
+
+6. (Bonus) An important part about being a data scientist is asking questions.  Write a question you may be interested in about this data set, and then use `dplyr` to figure out the answer!
+
+```{r}
+# Question to ask would be the most popular news sources
+data_pul %>% slice_max(Daily.Circulation..2004)
+data_pul %>% slice_max(Daily.Circulation..2013)
+```
+
+ 

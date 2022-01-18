@@ -1,0 +1,251 @@
+---
+title: 'Exam 2'
+author: "Richard Sauve"
+date: "DATA 2401 - Dr. Shoemaker"
+output:
+  html_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = T, eval = T) # sets all code to show and run
+```
+
+# Instructions 
+
+This exam is covered by the **UHD honor code**. Turning in this exam acknowledges that all work submitted on this exam is
+your own, and that you have not used any off limit resource. You may use the R help files as needed. 
+
+
+
+Submit your rmd *and* your knitted results, named `E2_LastNameFirstInitial.Rmd` and `E2_LastNameFirstInitial.html`, to Blackboard as instructed on the site. 
+
+Code clarity and organization will be 5 points of your total grade. Make sure you have comments where needed and your code is easy to follow (and grade), do not print out whole dataframes. Please read this document carefully to make sure that you don't miss any requested task. 
+
+
+
+
+
+#  Bills! 
+
+I randomly generate some data of IDs and how much they owe. The second dataframe is a database of the ID numbers from payments that were made. 
+
+```{r}
+# this makes the randomness be the same way every time
+set.seed(15) # leave it here
+
+# makes a data frame of the ID and their amount owed
+bills <- data.frame(id = 111:125, amount_owed = round(rnorm(15, 500, 20),2))
+glimpse(bills)
+
+# makes a data frame of id's the people who have made their payment 
+  # (we're just sampling from the full list of id's, pretend it's the people who sent in the money)
+who_paid <- data.frame(id = sample(111:125, size = 13))
+glimpse(who_paid)
+```
+
+
+1. (5 points) You're in charge of finding the ID numbers of customers who haven't paid their bill. Use the appropriate join to do so. 
+
+```{r}
+anti_join(bills, who_paid)
+```
+
++ 5 Extra Credit: Continue with your previous result; find the total amount that the fake company is still owed. 
+```{r}
+anti_join(bills, who_paid) %>% summarise(total_amount_owed = sum(amount_owed))
+```
+
+#  Houses! 
+
+Read in the houses.csv file from my GitHub using the below command. A subset of the information provided by the data owner is available in the appendix of this document.
+
+```{r}
+original_data <- read.csv("https://raw.githubusercontent.com/kshoemaker/Class_test/master/housedata.csv")
+```
+
+2. (3 points) Create a new dataframe, with only the following variables: `SalePrice, YrSold, MoSold, ScreenPorch, Fireplaces, GrLivArea, CentralAir, YearBuilt, BldgType, LotArea, 'X1stFlrSF', PoolArea'` and `OverallCond`. 
+
+Using an appropriate `dplyr` tool, rename `ScreenPorch` to `PorchSqFeet`, `GrLivArea` to `TotalSqFeet`, and `X1stFlrSF` to `SqFeetFirst` in your data frame.
+
+
+
+```{r}
+original_data %>% select(SalePrice, YrSold, MoSold, ScreenPorch, Fireplaces, GrLivArea, CentralAir, YearBuilt, BldgType, LotArea, X1stFlrSF, PoolArea, OverallCond) %>% rename(PorchSqFeet = ScreenPorch, TotalSqFeet = GrLivArea, SqFeetFirst = X1stFlrSF) -> new_data
+```
+
+
+3. (3 points) Is this data `tidy`? Why or why not? 
+```
+Yes this data is tidy as the data frame contains some necessary information with units to better understand the data as well.
+```
+4. (3 points) What types of variables does your new data frame have? 
+```
+The data frame contains the price of the house as well as age, size, and the quality or type of various different amenities.
+```
+## General Data Exploration
+
+5. (15 points) Use `dplyr` to answer the below questions: 
+
+- How old is the oldest house? 
+- How much did the biggest house, by squarefeet, sell for? 
+- What is the average total square footage and minimum lot area  for each building type? 
+- How many of the houses have central air? 
+
+```{r}
+# How old is the oldest house? 
+new_data %>% slice_min(YearBuilt)
+# How much did the biggest house, by squarefeet, sell for? 
+new_data %>% slice_max(TotalSqFeet)
+# What is the average total square footage and minimum lot area  for each building type?
+new_data %>% group_by(BldgType) %>% summarise(average_total_square_footage = mean(TotalSqFeet), minimum_lot_size = min(LotArea))
+# How many of the houses have central air? 
+new_data %>% filter(CentralAir == "Y") %>% count()
+```
+
+
+
+## Square feet and price
+
+6. (5 points) Make a scatterplot of `TotalSqFeet` on the x-axis and `SalePrice` on the y-axis.
+
+```{r}
+new_data %>% ggplot(aes(x = TotalSqFeet, y = SalePrice)) + geom_point()
+```
+
+7. (5 points) Now, color the points by `BldgType`. This is a little too much to see clearly, no? 
+
+```{r}
+new_data %>% ggplot(aes(x = TotalSqFeet, y = SalePrice, color = BldgType)) + geom_point()
+```
+
+8. (5 points) Try again, but now facet by `BldgType`. 
+
+```{r}
+new_data %>% ggplot(aes(x = TotalSqFeet, y = SalePrice, color = BldgType)) + geom_point() + facet_grid(~BldgType)
+```
+
+9. (5 points) What can you conclude from this plot? 
+```
+The relative increase in price per square feet for each of the housing types to compare to get the "best bang for your buck" if you were trying to buy for example.
+```
+## Porches
+
+10. (5 points) Make a histogram of the porch square footage. Use `ggplot` instead of base plotting with `hist()`.
+
+```{r}
+new_data %>% ggplot(aes(x = PorchSqFeet)) + geom_histogram(binwidth = 25)
+```
+
+11. (3 points) Create a new variable in your dataframe that indicates whether or not the house has a screened porch, something like T/F or "yes"/"no". How many houses have screened porches? How many don't? 
+
+```{r}
+new_data$Screen_Porch <- new_data$PorchSqFeet != 0
+
+new_data %>% group_by(Screen_Porch) %>% count()
+```
+
+12. (5 points) Filter the data for your histogram of the porch square footage to *only* houses *with* screened porches. 
+
+```{r}
+new_data %>% filter(Screen_Porch == T) %>% ggplot(aes(x = PorchSqFeet)) + geom_histogram(binwidth = 25)
+```
+
+
+13. (5 points) Color the points in the price vs. total squarefeet scatterplot by whether or not the house has a porch. You might consider making the points slightly transparent. 
+
+```{r}
+new_data %>% ggplot(aes(x = TotalSqFeet, y = SalePrice, color = Screen_Porch)) + geom_point(alpha = 0.35) + facet_grid(~BldgType)
+```
+
+14. (3 points) What, if anything, can you conclude from this? 
+```
+You can conclude that Duplexs' and Townhomes' do not have porches or maybe that 1 family homes with porches tend to more on the cheaper side if you were interested purching a home with a porch.
+```
+ 
+15. (5 points) Are there any duplexes or two family conversions ("2fmCon") that have porches? If so, use the data and dplyr to display **only** their `SalePrice`, `TotalSqFeet`, and Porch squarefeet, and sort them from largest to smallest home square feet. 
+
+```{r}
+new_data %>% select(SalePrice, TotalSqFeet, PorchSqFeet) %>% arrange(desc(TotalSqFeet))
+```
+
+
+## Central Air is New?
+
+16. (5 points) It would be reasonable to assume that newer houses have central air while older ones don't.  To explore this and see if the data supports this, plot an appropriate type of graph to look at YearBuilt, split by houses that do and don't have central air.  
+
+```{r}
+new_data %>% ggplot(aes(x = YearBuilt, color = CentralAir)) + geom_boxplot()
+```
+
+17. (5 points) There are several possible plot types for this question. What is another plot you could have used to explore the same question?  Plot it here. 
+
+```{r}
+new_data %>% ggplot(aes(x = YearBuilt, y = TotalSqFeet, color = CentralAir)) + geom_violin(alpha = 0.5)
+```
+
+##  Your turn
+
+18. (15 points) Using this home data, state a question and create a plot (or plots) of your own to answer that question. You may use any of the variables in our subsetted dataframe, or the 81 variables available in the full dataset. 
+
+Your question doesn't have to have an *interesting* answer, but your plot must answer the question. 
+
+Since im from Canada and there are no basements here in Houston, my question will be looking for prices of houses with basements seperated based on size
+
+```{r}
+original_data %>% select(SalePrice, YrSold, MoSold, ScreenPorch, Fireplaces, GrLivArea, CentralAir, YearBuilt, BldgType, LotArea, X1stFlrSF, PoolArea, OverallCond, TotalBsmtSF) %>% rename(PorchSqFeet = ScreenPorch, TotalSqFeet = GrLivArea, SqFeetFirst = X1stFlrSF) -> new_new_data
+```
+
+```{r}
+new_new_data$has_basement <- new_new_data$TotalBsmtSF != 0
+```
+
+```{r}
+new_new_data %>% filter(has_basement == T) %>% ggplot(aes(x = TotalBsmtSF, y = SalePrice, color = CentralAir)) + geom_point() + facet_wrap(~BldgType)
+```
+I guess now price and size of housing with pools
+```{r}
+new_new_data$has_pool <- new_new_data$PoolArea != 0
+```
+```{r}
+new_new_data %>% filter(has_pool == T) %>% ggplot(aes(x = TotalSqFeet, y = SalePrice)) + geom_point()
+```
+
+
+
+
+
+```{r}
+# As promised some of my horrifyingly beautiful plots
+new_data %>% ggplot(aes(x = YearBuilt)) + geom_boxplot()
+new_data %>% ggplot(aes(x = YearBuilt, color = CentralAir)) + geom_dotplot(binwidth = 10, alpha = 0.5)
+```
+\newpage
+
+
+
+
+## Appendix
+
+This dataset is information about houses sold in a certain area from 2006 to 2010. The info for the variables I selected is below, more info can be found here: https://github.com/kshoemaker/Class_test/blob/master/data_description.txt
+ 
+ 
+* `SalePrice` - the sale price of the house. 
+* `YrSold` - year sold 
+* `MoSold` - month sold
+* `ScreenPorch` - Screen porch area in square feet
+* `Fireplaces` - Number of fireplaces
+* `GrLivArea` - above-ground living area square feet
+* `CentralAir` - Central air conditioning
+* `YearBuilt` - Original construction date
+* `BldgType`
+  +   `1Fam`:	Single-family Detached	
+  +   `2FmCon`:	Two-family Conversion; originally built as one-family dwelling
+  +   `Duplx`:	Duplex
+  +   `TwnhsE`:	Townhouse End Unit
+  +   `TwnhsI`:	Townhouse Inside Unit
+* `LotArea` -  Lot size in square feet
+* `PoolArea` - Pool area in square feet
+* `OverallCon.` - Rates the overall condition of the house, 10 is "very excellent" to 1 is "very poor"

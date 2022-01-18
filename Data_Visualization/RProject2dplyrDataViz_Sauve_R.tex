@@ -1,0 +1,876 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={RProject 2: Viz and dplyr as Data Exploration Tools},
+  pdfauthor={Richard Sauve},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{RProject 2: Viz and dplyr as Data Exploration Tools}
+\author{Richard Sauve}
+\date{Data 2401}
+
+\begin{document}
+\maketitle
+
+There are 10 exercises, make sure you answer/complete them all. Turn in
+your knitted output.
+
+\emph{Lab adapted from MCR's STA 199 at Duke.}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Some define statistics as the field that focuses on turning information
+into knowledge. The first step in that process is to summarize and
+describe the raw information - the data. In this lab we explore data on
+college majors and earnings, specifically the data behind the
+FiveThirtyEight story ``The Economic Guide To Picking A College Major''.
+
+These data originally come from the American Community Survey (ACS)
+2010-2012 Public Use Microdata Series. While this is outside the scope
+of this lab, if you are curious about how raw data from the ACS were
+cleaned and prepared, see the code FiveThirtyEight authors used:
+\url{https://github.com/fivethirtyeight/data/blob/master/college-majors/college-majors-rscript.R}
+
+We should also note that there are many considerations that go into
+picking a major. Earnings potential and employment prospects are two of
+them, and they are important, but they don't tell the whole story. Keep
+this in mind as you analyze the data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse) }\DocumentationTok{\#\# we start by loading the tidyverse library}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.3.5     v purrr   0.3.4
+## v tibble  3.1.4     v dplyr   1.0.7
+## v tidyr   1.1.3     v stringr 1.4.0
+## v readr   2.0.1     v forcats 0.5.1
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\hypertarget{logistics}{%
+\section{Logistics}\label{logistics}}
+
+Save the data you downloaded from Blackboard to your course location on
+your computer. Download the RProject4.Rmd file and save it in the same
+location as RProject\_yourlast\_yourfirst.Rmd
+
+To complete this lab, complete the exercises in the correct locations in
+the .Rmd file, then knit the file and submit it. Remember that code goes
+in code chunks, and words and sentences go outside the chunks.
+
+\hypertarget{tips}{%
+\section{Tips}\label{tips}}
+
+\begin{itemize}
+\item
+  Your document will likely fail to knit on multiple occasions. Read the
+  error messages carefully; the error will tell you what line is causing
+  the failure.
+\item
+  Remember that your document cannot use variables that exist
+  ``outside'' the document, and executes the code in order, so you can't
+  use an object that you define later on in the document.
+\item
+  Refresh on your \texttt{dplyr} skills, this is going to start putting
+  them to work.
+\end{itemize}
+
+\hypertarget{load-in-data}{%
+\section{Load in Data}\label{load-in-data}}
+
+\texttt{college\_recent\_grads} is a tidy \emph{data frame}, with each
+row representing an observation and each column representing a variable.
+
+We will load in the csv from the file you downloaded from Blackboard.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"college\_recent\_grads.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+You can view this data by clicking on it in the environment, or with
+\texttt{glimpse}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{glimpse}\NormalTok{(college\_recent\_grads)}
+\end{Highlighting}
+\end{Shaded}
+
+The metadata is here:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Header & Description \\
+\midrule
+\endhead
+rank & Rank by median earnings \\
+major\_code & Major code, FO1DP in ACS PUMS \\
+major & Major description \\
+major\_category & Category of major from Carnevale et al \\
+total & Total number of people with major \\
+sample\_size & Sample size (unweighted) of full-time, year-round ONLY
+(used for earnings) \\
+men & Male graduates \\
+women & Female graduates \\
+sharewomen & Women as share of total \\
+employed & Number employed (ESR == 1 or 2) \\
+employed\_full\_time & Employed 35 hours or more \\
+employed\_part\_time & Employed less than 35 hours \\
+employed\_full\_time\_yearround & Employed at least 50 weeks (WKW == 1)
+and at least 35 hours (WKHP \textgreater= 35) \\
+unemployed & Number unemployed (ESR == 3) \\
+unemployment\_rate & Unemployed / (Unemployed + Employed) \\
+median & Median earnings of full-time, year-round workers \\
+p25th & 25th percentile of earnigns \\
+p75th & 75th percentile of earnings \\
+college\_jobs & Number with job requiring a college degree \\
+non\_college\_jobs & Number with job not requiring a college degree \\
+low\_wage\_jobs & Number in low-wage service jobs \\
+\bottomrule
+\end{longtable}
+
+SO much information. What questions might we want to answer with this
+data?
+
+\begin{itemize}
+\tightlist
+\item
+  Which major has the lowest unemployment rate?
+\item
+  Which major has the highest percentage of women?
+\item
+  How do the distributions of median income compare across major
+  categories?
+\item
+  Do women tend to choose majors with lower or higher earnings?
+\end{itemize}
+
+We're going to aim to answer those questions.
+
+\hypertarget{data-wrangling-and-visualization}{%
+\section{Data Wrangling and
+Visualization}\label{data-wrangling-and-visualization}}
+
+\hypertarget{which-major-has-the-lowest-unemployment-rate}{%
+\subsection{Which major has the lowest unemployment
+rate?}\label{which-major-has-the-lowest-unemployment-rate}}
+
+In order to answer this question all we need to do is sort the data. We
+use the arrange function to do this, and sort it by the
+unemployment\_rate variable. By default arrange sorts in ascending
+order, which is what we want here -- we're interested in the major with
+the lowest unemployment rate.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(unemployment\_rate)}
+\end{Highlighting}
+\end{Shaded}
+
+This gives us what we wanted, but not in an ideal form. First, the name
+of the major barely fits on the page. Second, some of the variables are
+not that useful (e.g.~\texttt{major\_code}, \texttt{major\_category})
+and some we might want front and center are not easily viewed
+(e.g.~\texttt{unemployment\_rate}).
+
+We can use the select function to choose which variables to display, and
+in which order: (Note how easily we expanded our code with adding
+another step to our pipeline, with the pipe operator: \%\textgreater\%.)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(unemployment\_rate) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(rank, major, unemployment\_rate)}
+\end{Highlighting}
+\end{Shaded}
+
+Ok, this is looking better, but do we really need all those decimal
+places in the unemployment variable? Not really!
+
+There are two ways we can address this problem. One would be to round
+the unemployment\_rate variable in the dataset or we can change the
+number of digits displayed, without touching the input data.
+
+Below are instructions for how you would do both of these:
+
+\textbf{Round unemployment\_rate:} We create a new variable with the
+mutate function. In this case, we're overwriting the existing
+unemployment\_rate variable, by rounding it to 4 decimal places.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(unemployment\_rate) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(rank, major, unemployment\_rate) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{unemployment\_rate =} \FunctionTok{round}\NormalTok{(unemployment\_rate, }\AttributeTok{digits =} \DecValTok{4}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{head}\NormalTok{(}\DecValTok{6}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   rank                                      major unemployment_rate
+## 1   53           Mathematics And Computer Science            0.0000
+## 2   74                      Military Technologies            0.0000
+## 3   84                                     Botany            0.0000
+## 4  113                               Soil Science            0.0000
+## 5  121 Educational Administration And Supervision            0.0000
+## 6   15  Engineering Mechanics Physics And Science            0.0063
+\end{verbatim}
+
+\textbf{Change displayed number of digits without touching data:} We can
+add an option to our R Markdown document to change the displayed number
+of digits in the output. To do so, add a new chunk, and set:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{options}\NormalTok{(}\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(unemployment\_rate) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(rank, unemployment\_rate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     rank unemployment_rate
+## 1     53            0.0000
+## 2     74            0.0000
+## 3     84            0.0000
+## 4    113            0.0000
+## 5    121            0.0000
+## 6     15            0.0063
+## 7     20            0.0117
+## 8    120            0.0162
+## 9      1            0.0184
+## 10    65            0.0196
+## 11     8            0.0212
+## 12   111            0.0222
+## 13    14            0.0230
+## 14     3            0.0241
+## 15    91            0.0244
+## 16    24            0.0278
+## 17    39            0.0283
+## 18    76            0.0295
+## 19    92            0.0296
+## 20    51            0.0337
+## 21    68            0.0341
+## 22    73            0.0354
+## 23   155            0.0365
+## 24    45            0.0370
+## 25   157            0.0378
+## 26   137            0.0386
+## 27   165            0.0401
+## 28   101            0.0415
+## 29    52            0.0425
+## 30    17            0.0429
+## 31    35            0.0449
+## 32   144            0.0455
+## 33   169            0.0463
+## 34   139            0.0466
+## 35    70            0.0472
+## 36   145            0.0473
+## 37    42            0.0473
+## 38   164            0.0476
+## 39    28            0.0479
+## 40    44            0.0482
+## 41   109            0.0485
+## 42    64            0.0500
+## 43     4            0.0501
+## 44   129            0.0503
+## 45   153            0.0509
+## 46   140            0.0515
+## 47   156            0.0519
+## 48   134            0.0522
+## 49    66            0.0525
+## 50   172            0.0536
+## 51    75            0.0540
+## 52   118            0.0541
+## 53   133            0.0545
+## 54    32            0.0550
+## 55    61            0.0555
+## 56   161            0.0557
+## 57    98            0.0558
+## 58    67            0.0564
+## 59    50            0.0570
+## 60     9            0.0573
+## 61   114            0.0574
+## 62    25            0.0582
+## 63   123            0.0585
+## 64    10            0.0592
+## 65   131            0.0592
+## 66    87            0.0596
+## 67   162            0.0598
+## 68   127            0.0598
+## 69    18            0.0598
+## 70    27            0.0600
+## 71   149            0.0603
+## 72    36            0.0607
+## 73    46            0.0607
+## 74     5            0.0611
+## 75   128            0.0612
+## 76    78            0.0612
+## 77    19            0.0619
+## 78   159            0.0626
+## 79    21            0.0632
+## 80   100            0.0634
+## 81   170            0.0651
+## 82    12            0.0652
+## 83    11            0.0654
+## 84   108            0.0666
+## 85    81            0.0668
+## 86   151            0.0671
+## 87    99            0.0680
+## 88   158            0.0686
+## 89   104            0.0687
+## 90   152            0.0688
+## 91   102            0.0692
+## 92    97            0.0692
+## 93    41            0.0697
+## 94   122            0.0698
+## 95    26            0.0706
+## 96   124            0.0707
+## 97   110            0.0709
+## 98    40            0.0715
+## 99    88            0.0720
+## 100   63            0.0720
+## 101   77            0.0722
+## 102  107            0.0727
+## 103   58            0.0729
+## 104   69            0.0731
+## 105   29            0.0744
+## 106  148            0.0747
+## 107   34            0.0750
+## 108   94            0.0752
+## 109   55            0.0752
+## 110   86            0.0754
+## 111  116            0.0756
+## 112  147            0.0760
+## 113   72            0.0772
+## 114  167            0.0775
+## 115  141            0.0783
+## 116   93            0.0786
+## 117   83            0.0805
+## 118   89            0.0814
+## 119  168            0.0817
+## 120  135            0.0821
+## 121   95            0.0825
+## 122  117            0.0836
+## 123  146            0.0838
+## 124  150            0.0842
+## 125   62            0.0844
+## 126  125            0.0850
+## 127   49            0.0855
+## 128   47            0.0863
+## 129   16            0.0871
+## 130   23            0.0876
+## 131  138            0.0877
+## 132   33            0.0894
+## 133  160            0.0896
+## 134  105            0.0896
+## 135  126            0.0898
+## 136   48            0.0908
+## 137   13            0.0921
+## 138  132            0.0923
+## 139   43            0.0935
+## 140   31            0.0936
+## 141    7            0.0957
+## 142  115            0.0957
+## 143  136            0.0961
+## 144   60            0.0962
+## 145   38            0.0964
+## 146  112            0.0967
+## 147   96            0.0968
+## 148   57            0.0968
+## 149   22            0.0969
+## 150  103            0.0972
+## 151   37            0.0991
+## 152   82            0.0997
+## 153   79            0.1012
+## 154  154            0.1022
+## 155  163            0.1028
+## 156  143            0.1035
+## 157  130            0.1044
+## 158  173            0.1049
+## 159  142            0.1058
+## 160  166            0.1071
+## 161   56            0.1076
+## 162   71            0.1088
+## 163  119            0.1121
+## 164   59            0.1133
+## 165   80            0.1135
+## 166   54            0.1140
+## 167    2            0.1172
+## 168  106            0.1195
+## 169   30            0.1284
+## 170  171            0.1490
+## 171   85            0.1518
+## 172   90            0.1595
+## 173    6            0.1772
+\end{verbatim}
+
+Note that the \texttt{digits} in \texttt{options} is scientific digits,
+and in \texttt{round} they are decimal places. If you're thinking
+``Wouldn't it be nice if they were consistent?'', you're right\ldots{}
+
+You don't need to do both of these, that would be redundant. The next
+exercise asks you to choose one.
+
+\begin{quote}
+\textbf{Exercise 1: } Which of these options, changing the input data or
+altering the number of digits displayed without touching the input data,
+is the better option? Explain your reasoning. Then, implement the option
+you chose.
+\end{quote}
+
+\begin{verbatim}
+I chose the first option as were working with percentage and not something like a price level being measure in the millions which would more likely require the second option.
+\end{verbatim}
+
+\hypertarget{which-major-has-the-highest-percentage-of-women}{%
+\subsection{Which major has the highest percentage of
+women?}\label{which-major-has-the-highest-percentage-of-women}}
+
+To answer such a question we need to arrange the data in descending
+order. For example, if earlier we were interested in the major with the
+highest unemployment rate, we would use the following:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(sharewomen)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(rank, major, sharewomen) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{na.omit}\NormalTok{(sharewomen) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{sharewomen =} \FunctionTok{round}\NormalTok{(sharewomen, }\AttributeTok{digits =} \DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+\textbf{Exercise 2:} Using what you've learned so far, arrange the data
+in descending order with respect to proportion of women in a major, and
+display only the major, the total number of people with major, and
+proportion of women. Show only the top 3 majors by adding
+\texttt{head(3)} at the end of the pipeline.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(sharewomen)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(women, major, sharewomen) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{na.omit}\NormalTok{(sharewomen) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{sharewomen =} \FunctionTok{round}\NormalTok{(sharewomen, }\AttributeTok{digits =} \DecValTok{2}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{head}\NormalTok{(}\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   women                                         major sharewomen
+## 1 36422                     Early Childhood Education       0.97
+## 2 37054 Communication Disorders Sciences And Services       0.97
+## 3 10320                    Medical Assisting Services       0.93
+\end{verbatim}
+
+\hypertarget{how-do-the-distributions-of-median-income-compare-across-major-categories}{%
+\subsection{How do the distributions of median income compare across
+major
+categories?}\label{how-do-the-distributions-of-median-income-compare-across-major-categories}}
+
+There are three types of incomes reported in this data frame:
+\texttt{p25th}, \texttt{median}, and \texttt{p75th}. These correspond to
+the 25th, 50th, and 75th percentiles of the income distribution of
+sampled individuals for a given major. (Remember: a percentile is a
+measure used in statistics indicating the value below which a given
+percentage of observations in a group of observations fall. For example,
+the 20th percentile is the value below which 20\% of the observations
+may be found. (Source: Wikipedia))
+
+\begin{quote}
+\textbf{Exercise 3:} Why do we often choose the median, rather than the
+mean, to describe the typical income of a group of people?
+\end{quote}
+
+\begin{verbatim}
+We use median in situations were data distribution is skewed and when measuring incomes that is often the case as not all majors are involved in industries that are scalable and are thus susceptable to huge variations in income.
+\end{verbatim}
+
+The question we want to answer is ``How do the distributions of median
+income compare across major categories?''. We need to do a few things to
+answer this question: First, we need to group the data by
+\texttt{major\_category}. Then, we need a way to summarize the
+distributions of median income within these groups. This decision will
+depend on the shapes of these distributions. So first, we need to
+visualize the data.
+
+We use the \texttt{ggplot} function to do this. The first argument is
+the data frame, and the next argument gives the mapping of the variables
+of the data to the \texttt{aes}thetic elements of the plot.
+
+Let's start simple and take a look at the distribution of all median
+incomes, without considering the major categories.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ college\_recent\_grads, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ median)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{binwidth =} \DecValTok{5000}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Along with the plot, we get a message:
+
+\begin{quote}
+\texttt{stat\_bin()} using \texttt{bins\ =\ 30}. Pick better value with
+\texttt{binwidth}.
+\end{quote}
+
+This is telling us that we might want to reconsider the binwidth we
+chose for our histogram -- or more accurately, the binwidth we didn't
+specify. It's good practice to always thing in the context of the data
+and try out a few binwidths before settling on a binwidth. You might ask
+yourself: ``What would be a meaningful difference in median incomes?''
+\$1 is obviously too little, \$10000 might be too high.
+
+\begin{quote}
+\textbf{Exercise 4:} Try binwidths of \$1000 and \$5000 and choose one.
+Explain your reasoning for your choice. Note that the binwidth is an
+argument for the geom\_histogram function. So to specify a binwidth of
+\$1000, you would use geom\_histogram(binwidth = 1000).
+\end{quote}
+
+\begin{verbatim}
+I chose 5000 since 1000 felt too caotic with so many bars and the more calmer/simpler 5000 bins get across the point just as well since were trying to analyze the generic spread of the majors median incomes.
+\end{verbatim}
+
+We can also calculate summary statistics for this distribution using the
+summarise function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{min =} \FunctionTok{min}\NormalTok{(median), }\AttributeTok{max =} \FunctionTok{max}\NormalTok{(median),}
+            \AttributeTok{mean =} \FunctionTok{mean}\NormalTok{(median), }\AttributeTok{med =} \FunctionTok{median}\NormalTok{(median),}
+            \AttributeTok{sd =} \FunctionTok{sd}\NormalTok{(median), }
+            \AttributeTok{q1 =} \FunctionTok{quantile}\NormalTok{(median, }\AttributeTok{probs =} \FloatTok{0.25}\NormalTok{),}
+            \AttributeTok{q3 =} \FunctionTok{quantile}\NormalTok{(median, }\AttributeTok{probs =} \FloatTok{0.75}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+\textbf{Exercise 5:} Based on the shape of the histogram you created in
+the previous exercise, determine which of these summary statistics is
+useful for describing the distribution. Write up your description
+(remember shape, center, spread, any unusual observations) and include
+the summary statistic output as well.
+\end{quote}
+
+\begin{verbatim}
+The center of the graph is the 35000-40000 area per the mean and the med. It is quite steep with most of the majors being within the 30000-50000 range. Most of the variation is towards higher incomes as stated earlier in the previous questions.
+\end{verbatim}
+
+Next, we facet the plot by major category.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ college\_recent\_grads, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ median)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{( }\SpecialCharTok{\textasciitilde{}}\NormalTok{ major\_category, }\AttributeTok{ncol =} \DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+\textbf{Exercise 6:} Plot the distribution of median income using a
+histogram, faceted by major\_category. Use the binwidth you chose in the
+earlier exercise.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ college\_recent\_grads, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ median)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{binwidth =} \DecValTok{5000}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{( }\SpecialCharTok{\textasciitilde{}}\NormalTok{major\_category)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{RProject2dplyrDataViz_Sauve_R_files/figure-latex/unnamed-chunk-13-1.pdf}
+Now that we've seen the shapes of the distributions of median incomes
+for each major category, we should have a better idea for which summary
+statistic to use to quantify the typical median income.
+
+\begin{quote}
+\textbf{Exercise 7:} Which major category has the highest typical
+(you'll need to decide what this means) median income? Use the partial
+code below, filling it in with the appropriate statistic and function.
+Also note that we are looking for the highest statistic, so make sure to
+arrange in the correct direction.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(major\_category) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{highest\_typical\_median\_income =} \FunctionTok{median}\NormalTok{(median)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(highest\_typical\_median\_income))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+\textbf{Exercise 8:} Which major category is the least popular in this
+sample? To answer this question we use a new function called count,
+which first groups the data and then counts the number of observations
+in each category (see below). Add to the pipeline below appropriately to
+arrange the results so that the major with the lowest observations is on
+top.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(major\_category) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(n)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{all-stem-fields-arent-the-same}{%
+\subsection{All STEM fields aren't the
+same}\label{all-stem-fields-arent-the-same}}
+
+One of the sections of the FiveThirtyEight story is ``All STEM fields
+aren't the same''. Let's see if this is true.
+
+First, let's create a new vector called \texttt{stem\_categories} that
+lists the major categories that are considered STEM fields.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stem\_categories }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Biology \& Life Science"}\NormalTok{,}
+                     \StringTok{"Computers \& Mathematics"}\NormalTok{,}
+                     \StringTok{"Engineering"}\NormalTok{,}
+                     \StringTok{"Physical Sciences"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Then, we can use this to create a new variable in our data frame
+indicating whether a major is STEM or not.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\OtherTok{\textless{}{-}}\NormalTok{ college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{major\_type =} \FunctionTok{ifelse}\NormalTok{(major\_category }\SpecialCharTok{\%in\%}\NormalTok{ stem\_categories, }\StringTok{"stem"}\NormalTok{, }\StringTok{"not stem"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Let's unpack this: with mutate we create a new variable called
+\texttt{major\_type}, which is defined as ``stem'' if the
+\texttt{major\_category} is in the vector called
+\texttt{stem\_categories} we created earlier, and as ``not stem''
+otherwise.
+
+\texttt{\%in\%} is a logical operator, like \texttt{==},
+\texttt{\textless{}=}, \texttt{!=} (not equals), and \texttt{\textbar{}}
+(or)
+
+We can use the logical operators to also filter our data for STEM majors
+whose median earnings is less than median for all majors's median
+earnings, which we found to be \$36,000 earlier.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\OtherTok{\textless{}{-}}\NormalTok{ college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{major\_type =} \FunctionTok{ifelse}\NormalTok{(major\_category }\SpecialCharTok{\%in\%}\NormalTok{ stem\_categories, }\StringTok{"stem"}\NormalTok{, }\StringTok{"not stem"}\NormalTok{))}
+\CommentTok{\# sorry I had to put this here cause I wanted to be sure it would knit because the next questions part wasn\textquotesingle{}t knitted}
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}
+\NormalTok{    major\_type }\SpecialCharTok{==} \StringTok{"stem"}\NormalTok{,}
+\NormalTok{    median }\SpecialCharTok{\textless{}} \DecValTok{36000}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+\textbf{Exercise 9:}Which STEM majors have median salaries equal to or
+less than the median for all majors's median earnings? Your output
+should only show the major name and median, 25th percentile, and 75th
+percentile earning for that major as and should be sorted such that the
+major with the highest median earning is on top.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\OtherTok{\textless{}{-}}\NormalTok{ college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{major\_type =} \FunctionTok{ifelse}\NormalTok{(major\_category }\SpecialCharTok{\%in\%}\NormalTok{ stem\_categories, }\StringTok{"stem"}\NormalTok{, }\StringTok{"not stem"}\NormalTok{))}
+\CommentTok{\# as I said I don\textquotesingle{}t know why this part wasn\textquotesingle{}t knitting even the previous one was}
+\CommentTok{\# it didn\textquotesingle{}t like this part: major\_type == "stem"}
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(median }\SpecialCharTok{\textless{}=} \FunctionTok{median}\NormalTok{(college\_recent\_grads}\SpecialCharTok{$}\NormalTok{median), major\_type }\SpecialCharTok{==} \StringTok{"stem"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(major, median, p25th, p75th) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                    major median p25th p75th
+## 1                            Geosciences  36000 21000 41000
+## 2                  Environmental Science  35600 25000 40200
+## 3  Multi-Disciplinary Or General Science  35000 24000 50000
+## 4                             Physiology  35000 20000 50000
+## 5             Communication Technologies  35000 25000 45000
+## 6                           Neuroscience  35000 30000 44000
+## 7   Atmospheric Sciences And Meteorology  35000 28000 50000
+## 8                  Miscellaneous Biology  33500 23000 48000
+## 9                                Biology  33400 24000 45000
+## 10                               Ecology  33000 23000 42000
+## 11                               Zoology  26000 20000 39000
+\end{verbatim}
+
+\hypertarget{what-types-of-majors-do-women-tend-to-major-in}{%
+\subsection{What types of majors do women tend to major
+in?}\label{what-types-of-majors-do-women-tend-to-major-in}}
+
+\textbf{Exercise 10:} Create a scatterplot of median income
+vs.~proportion of women in that major, colored by whether the major is
+in a STEM field or not. Describe the association between these three
+variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{college\_recent\_grads }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ sharewomen, }\AttributeTok{y =}\NormalTok{ median, }\AttributeTok{color =}\NormalTok{ major\_type)) }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 1 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{RProject2dplyrDataViz_Sauve_R_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\begin{verbatim}
+The relationship being shown here is the distibution of women vs the median incomes and the distribution of stem and not-stem within that framework. The graph is clearly demonstrating two seperate things. The first that stem field majors tend to make more and that women tend to make up a larger percentage within non-stem fields.
+\end{verbatim}
+
+\end{document}

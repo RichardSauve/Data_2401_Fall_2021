@@ -1,0 +1,165 @@
+---
+title: "In Class Lab - Lists"
+author: "Richard Sauve"
+date: "DATA 2401"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+**Note: Your exam will be in a similar format to this (RMarkdown File with Questions and Code chunks for your answers), so make SURE you have the process for knitting to html or pdf working.** 
+
+This lab is designed to be if we finish early on List day OR as part of the review on Monday. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# uncomment these, run them ONCE, then recomment them
+#install.packages(tidyverse)
+#install.packages(ggplot2)
+
+
+library(tidyverse)
+library(ggplot2)
+
+```
+
+## Indexing 
+
+1. The below code chunk saves some built-in data about diamonds to vectors in your environment. (Run `? diamonds` in your console for more information, you may need to install and load the `tidyverse` and `ggplot2` libraries using the code in the chunk above). Using indexing and the tools you've learned, find the following:
+
+   - What's the mean price of diamonds? The mean carat value? 
+   - How many diamonds are more than 4 carats?
+   - What's the largest diamond?
+   - What's the most expensive diamond? 
+   - Assuming that these are paired information (`carats[1]` and `price[1]` are information about the *same diamond*), how many carats is the most expensive diamond? 
+
+```{r}
+carats <- diamonds$carat
+price <- diamonds$price
+
+
+```
+
+```{r}
+# What's the mean price of diamonds? The mean carat value? 
+print(mean(price))
+print(mean(carats))
+
+# How many diamonds are more than 4 carats?
+carats_4 <- carats > 4
+print(length(carats_4))
+
+# What's the largest diamond?
+print(max(carats))
+
+# What's the most expensive diamond? 
+print(max(price))
+
+# Assuming that these are paired information 
+# (`carats[1]` and `price[1]` are information about the same diamond), 
+# how many carats is the most expensive diamond? 
+
+print(max(carats)) # isnt this the same as questions 3?
+ 
+# find average price of diamonds under 1 carat
+carats_1 <- carats < 1
+print(mean(carats_1))
+
+# what is size of the largest diamond I can get for less than 1000
+diamond_1000 <- carats[price < 1000]
+print(max(diamond_1000))
+
+```
+
+##  Functions + Indexing
+
+1. Write a function that takes in a numeric vector, changes any negative values to 0, and returns the changed vector. 
+
+```{r}
+no_negatives <- function(vector){
+   vector_pos <- c()
+   if (is.vector(vector) & is.numeric(vector)){
+      for (x in 1:length(vector)){
+         if (vector[x] < 0){
+            vector_pos <- append(vector_pos, vector[x]*-1)
+         }else{
+            vector_pos <- append(vector_pos, vector[x])
+         }
+      }
+      return(vector_pos)
+   }else{
+      print("You did not input a numeric vector")
+   }
+}
+
+my_vector <- c((5:1)*-1, 0 , 1:5)
+
+no_negatives(my_vector)
+
+```
+
+
+
+
+
+
+##  Lists
+
+Back to the diamond data. 
+
+1. Make a boolean vector called `too_much` that is T/F to indicate if each element of `price` is larger than the median value of `price`.
+
+```{r}
+too_much <- price > mean(price)
+
+```
+
+
+1. Put this vector, along with `carats` and `price` in a list called `diamond_info`. What are the different ways you can access the information inside this list? 
+
+```{r}
+diamond_info <- list(carats, price)
+```
+
+```{r, eval = T}
+# I set eval = F here in the chunk so these don't run and take 200+ pages... 
+print(diamond_info$carats)
+```
+
+```{r, eval = T}
+# let's look at what happens here
+# back to eval = T, which is the default
+print(diamond_info$carats)
+
+```
+
+
+1. Use `lapply` to find the mean of each variable. 
+Sidenote challenge question: why is the mean value of `too_much` what it is? 
+
+```{r}
+lapply(too_much, mean)[[1]] # It was annoying having it all print out
+# too_much is a list of Boolean values with True/False corresponding to 1/0
+print(mean(too_much))
+
+```
+
+1. How can I remove the element `too_much` from the list?
+
+```{r}
+# for example if I wanted to remove the second element I put a negative in fron tof the number in the idex slow
+# too_much <- too_much[-2]
+```
+
+
+
+```{r}
+# price of the diamonds that are larger than 4 carats
+diamond_info$my_price[ diamond_info$my_carats > 4]
+
+# price of the diamonds that are larger than 4 carats or smaller than .3 carats
+index_vec <-  diamond_info$my_carats < .3 | diamond_info$my_carats > 4
+diamond_info$my_price[index_vec]
+```
+

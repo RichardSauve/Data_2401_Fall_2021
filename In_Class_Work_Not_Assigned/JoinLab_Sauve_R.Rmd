@@ -1,0 +1,137 @@
+---
+title: "Join Lab"
+author: "Richard Sauve"
+date: "DATA 2401"
+output: html_document
+---
+
+Case Study: Lahman’s Baseball Database
+
+*Adapted from https://rpubs.com/williamsurles/293454. More advanced work is also available at https://rstudio-pubs-static.s3.amazonaws.com/390062_b835662a6f3b419eb7841165956eb3eb.html#lahman%E2%80%99s_baseball_database*
+
+```{r}
+install.packages("Lahman")
+library(Lahman) # you may need to install.packages() this
+library(tidyverse)
+```
+
+Sean Lahman’s baseball database:
+- 26 tables
+- A great example of real world relational data
+
+What are the universal variables? The keys?  Do any variable names span all of the datasets?
+
+
+
+
+
+### Common keys?
+
+There is a LOT of data here. We'll talk more about common keys when we talk about SQL. For now, you need to know that each player has a unique `playerID` that we'll be using to join. 
+
+
+
+### Salaries
+
+Who are the players? We can get list of distinct players, call the data frame `players`, by piping to `distinct`. 
+
+How can we count how many players there are?
+
+```{r}
+players <- People %>% distinct()
+nrow(players)
+```
+
+
+### Missing salaries
+
+How many players are completely missing salary information? We can look at the dataframe `Salaries` to see. 
+
+```{r}
+Salaries %>%
+        count(salary) %>%
+        arrange()
+        
+```
+
+
+We need to find the difference! Do an anti-join and count! (Remember our `by` variable is `playerID`)
+
+Remember than an anti-join finds the members of dataframe A that are NOT in dataframe B. So, the anti-join of `players` with `Salaries` will give us the `playerID`s that are in the `players` database but NOT in the `Salaries` database. 
+
+```{r}
+anti_join(players, Salaries, by = "playerID")
+
+```
+
+### Unpaid games?
+
+Is it possible that these players somehow did not play (and hence did not earn a salary)? We need to do a `semi-join` with `Appearances`, after our anti-join from above and count again! 
+
+```{r}
+head(Appearances)
+```
+
+```{r}
+anti_join(players, Salaries, by = "playerID") %>%
+        semi_join(Appearances)
+```
+
+### How many games?
+
+Can you determine how many games each of these unsalaried players played?
+
+ - do our anti and left join from before
+ - group by playerID
+ - summarize by `sum`ming `G_all`
+ - arrange in descending order 
+ 
+```{r}
+
+```
+
+
+### How many at-bats?
+
+Is it possible that the unsalaried players did not actually play in the games that they appeared in? Do our anti-join with salary, then a `left_join` with `Batting`, then sum their at bats, `AB`,  to find out.
+
+```{r}
+head(Batting)
+```
+
+```{r}
+
+
+```
+
+
+### Hall of fame nominations
+
+Let’s see how many players have been nominated for the Hall of Fame.
+
+```{r}
+head(HallOfFame)
+```
+
+Find (count) the distinct players that appear in HallOfFame. Create a new dataframe with the distinct players, then count that. 
+
+```{r}
+
+```
+
+Join this distinct dataframe with the People data to get all the info about those players. 
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+
+There is SO MUCH more on the two websites listed above, if you're interested (or if you come back to these notes later when you're working on your project... )
+
+
+

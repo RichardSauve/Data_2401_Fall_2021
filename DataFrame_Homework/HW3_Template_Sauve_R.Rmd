@@ -1,0 +1,210 @@
+---
+title: "Homework 3"
+author: "Richard Sauve"
+date: "Due 10/18/21"
+output: html_document
+---
+
+Please submit a zip file containing the *knitted* html of your answers, titled HW3_lastname.html 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+## Working with a created data frame
+
+1. Create a vector of 100 employees ("Employee 1", "Employee 2", ... "Employee 100")
+Hint: use the `paste()` function and vector recycling to add a number to the word
+"Employee"
+
+```{r}
+employees <- c(1:100)
+employees <- paste("Employee", employees)
+```
+
+
+2. Create a vector of 100 random salaries for the year 2017
+Use the `runif()` function to pick random numbers between 40000 and 50000
+
+```{r}
+salaries_2017 <- runif(100, 40000, 50000)
+```
+
+
+3. Create a vector of 100 annual salary adjustments between -5000 and 10000.
+(A negative number represents a salary decrease)
+Again use the `runif()` function to pick 100 random numbers in that range.
+
+```{r}
+salary_adjustments <- round(runif(100, -5000, 10000), 2)
+
+```
+
+
+4. Create a data frame `salaries` by combining the 3 vectors you just made
+Remember to set `stringsAsFactors=FALSE`!
+
+```{r}
+salaries <- data.frame(employees, salaries_2017, salary_adjustments, stringsAsFactors = FALSE)
+
+```
+
+5. Add a column to the `salaries` data frame that represents each person's
+salary in 2018 (e.g., with the salary adjustment added in).
+
+```{r}
+salaries$salaries_2018 <- salaries$salaries_2017 + salaries$salary_adjustments
+```
+
+
+6. Add a column to the `salaries` data frame that has a value of `TRUE` if the 
+person got a raise (their salary went up)
+
+```{r}
+salaries$Got_Raise <- salaries$salaries_2018 > salaries$salaries_2017
+```
+
+
+Retrieve values from your data frame to answer the following questions
+
+Note that you should get the value as specific as possible (e.g., a single
+cell rather than the whole row!). 
+
+1. What was the 2018 salary of Employee 57
+
+```{r}
+salaries$salaries_2018[57]
+```
+
+
+
+2. How many employees got a raise?
+
+```{r}
+salaries %>%
+  select(Got_Raise) %>%
+  filter(Got_Raise == TRUE) %>%
+  count()
+```
+
+
+3. What was the dollar value of the highest raise?
+
+```{r}
+salaries %>%
+  select(salary_adjustments) %>%
+  max()
+```
+
+
+4. What was the "name" (number) of the employee who received the highest raise?
+
+```{r}
+salaries$employees[salaries$salary_adjustments == max(salary_adjustments)]
+# wow employee 57 got the highest raise in my first iteration
+```
+
+
+
+5. What was the largest decrease in salaries between the two years?
+
+```{r}
+min(salaries$salary_adjustments)
+```
+
+
+
+6. What was the name of the employee who received largest decrease in salary?
+
+```{r}
+salaries$employees[salaries$salary_adjustments == min(salary_adjustments)]
+```
+
+
+
+7. What was the average salary change?
+
+```{r}
+mean(salaries$salary_adjustments)
+```
+
+
+
+8. For people who did not get a raise, how much money did they lose on average?
+
+```{r}
+salaries %>%
+  select(salary_adjustments) %>%
+  filter(salary_adjustments < 0) %>%
+  summarise(mean = mean(salary_adjustments)) # why cant you just pass it into mean(), didn't really understand why
+```
+
+
+
+Consider: do the above averages match what you expected them to be based on how you generated the salaries?
+
+
+
+
+
+## Baby Name Popularity Over Time
+
+Read in the female baby names data file found on Blackboard into a 
+variable called `names`. Remember to NOT treat the strings as factors!
+
+
+Create a data frame `names_2013` that contains only the rows for the year 2013
+```{r}
+names <- data.frame(read.csv("female_names.csv"), stringsAsFactors = FALSE)
+names_2013 <- filter(names, year == 2013)
+```
+
+1. What was the most popular female name in 2013?
+```{r}
+names_2013 %>%
+  slice_max(proportion)
+```
+
+2. Write a function `most_popular_in_year` that takes in a year as a value and 
+returns the most popular name in that year
+```{r}
+most_popular_in_year <- function(input_year){
+  names %>%
+    filter(year == input_year) %>%
+    slice_max(proportion)
+}
+```
+
+3. Use your new function. What was the most popular female name in 1994?
+```{r}
+most_popular_in_year(1994)
+```
+
+4. Write a function `number_in_million` that takes in a name and a year, and 
+returns statistically how many babies out of 1 million born that year have 
+that name. 
+Hint: get the popularity percentage, and take that percentage out of 1 million.
+```{r}
+number_in_million <- function(input_name, input_year){
+  names %>%
+    filter(name == input_name, year == input_year) %>%
+    summarise(per_million = proportion*1000000)
+}
+```
+
+5. How many babies out of 1 million had the name 'Laura' in 1995?
+```{r}
+number_in_million("Laura", 1995)
+```
+
+6. How many female babies out of 1 million had your name in the year you were born?
+```{r}
+number_in_million("Richard", 1998)
+```
+
+Consider: what does this all tell you about how easy it is to identify someone with just your name and birth year?
+```
+With only a couple more points of information, you could easily track people down or at least get the list down 
+to a trial and error situation.
+```
